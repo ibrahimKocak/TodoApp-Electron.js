@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO List | Electron.js</title>
+    <link rel="stylesheet" href="../assets/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <a class="navbar-brand">TODO List | Electron</a>
+        <div class="col-md-8 d-flex">
+            <input type="text" class="form-control mr-1" id="todoValue"/>
+            <button class="btn btn-success mr-1" id="addBtn">Ekle</button>
+            <button class="btn btn-danger" id="closeBtn">Çıkış</button>
+        </div>
+    </nav>
+    <div class="container main-container mt-3">
+        <div class="todo-container container"></div>
+
+        <div class="alert-container row">
+            <div class="alert alert-warning col-md-8 offset-2">
+                <b>Herhangi bir TODO bulunmamaktadır!!!</b>
+            </div>
+        </div>
+    </div>
+    <nav class="navbar fixed-bottom navbar-light bg-light">
+        <span>Toplam Kayıt Sayısı: <b class="total-count-container">0</b></span>
+    </nav>
+
+    <script>
+
+        const {ipcRenderer } = require('electron');
+        
+        let addBtn = document.querySelector("#addBtn");
+        let todoValue = document.querySelector('#todoValue');
+        let closeBtn = document.querySelector('#closeBtn');
+        
+        addBtn.addEventListener("click", () => {
+
+            if(todoValue.value !== ""){
+                ipcRenderer.send("newTodo:save", {ref : "main", todoValue : todoValue.value});
+                todoValue.value = "";
+            }
+        });
+        
+        closeBtn.addEventListener("click", () => {
+
+            if(confirm("Çıkmak İstiyor musunuz?"))
+                ipcRenderer.send("todo:close");
+        });
+
+        todoValue.addEventListener("keypress", (e) => {
+            
+            if(e.keyCode == 13){
+                if(todoValue.value !== ""){
+                    ipcRenderer.send("newTodo:save", {ref : "main", todoValue : e.target.value});
+                    e.target.value = "";
+                }
+            }
+        })
+
+    </script>
+</body>
+</html>
